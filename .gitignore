@@ -1,0 +1,9 @@
+# Idea File
+.idea
+
+# Build Files
+cmake-build-debug
+
+# sdl local library
+sdl
+
