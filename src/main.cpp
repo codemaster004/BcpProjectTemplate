@@ -1,7 +1,85 @@
 
+#include "cstdio"
+
 #include "../sdl/include/SDL.h"
 
+#define SCREEN_WIDTH 300
+#define SCREEN_HEIGHT 300
+
 int main() {
+	// PART 1. THIS ONLY INITIALIZES THE LIBRARY
+
+	// Check if the library is able to be imported and start
+	if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
+		// can return an error if for example a pat is missing
+		printf("SDL_Init error: %s\n", SDL_GetError()); // show what happened
+		return 1;
+	}
+
+	SDL_Window *window;
+	SDL_Renderer *renderer;
+	// Create a window "application window" with specified size (use (0, 0) for full screen)
+	// Also create render for this window, reader meaning this space under the "window bar"
+	int initError = SDL_CreateWindowAndRenderer(SCREEN_WIDTH, SCREEN_HEIGHT, 0, &window, &renderer);
+
+	// returns a value 0 if was able to create window
+	if (initError != 0) {
+		// if it didn't manage to create window quit everything
+		SDL_Quit();
+		printf("SDL_CreateWindowAndRenderer error: %s\n", SDL_GetError()); // show what happened
+		return 1;
+	}
+
+	// SDL_SetHint - sets a value to given setting in SDL
+	// SDL_HINT_RENDER_SCALE_QUALITY - setting name meaning how images are scaled
+	SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear"); // you can safely remove for now
+
+	// Tell the render what is the area he will be drawing/rendering
+	SDL_RenderSetLogicalSize(renderer, SCREEN_WIDTH, SCREEN_HEIGHT); // for safety leave this "here"
+
+	// This sets default drawing color
+	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+
+	// Setting the title for the provided `window`
+	SDL_SetWindowTitle(window, "Hello there. General Kenobi!");
+
+	// You can think of the Surface as a rectangle you are drawing (changing pixels) on
+	SDL_Surface *screen; // this time we create variable for out "main" drawing rectangle
+
+	// Create the drawing surface the same size as the main window with standard RGBA color schema
+	// "standard RGBA color schema" - red is red and so on,
+	// We could change this to interpret (Red, Green, Blue) as (Blue, Green, Red)
+	screen = SDL_CreateRGBSurface(
+		0, // This should always be 0, however does nothing
+		SCREEN_WIDTH, SCREEN_HEIGHT, // the size you want the Surface to be
+		32, // Size in bits of the next 4 variables to come
+		0x00FF0000, 0x0000FF00, 0x000000FF, 0xFF000000
+	); // magical byte numbers interpreting color
+	/* Magic bytes?
+	 * 0x00 - this a general notation of one Byte. Its value is 0.
+	 * 0x01 - this is value 1 (00000001).
+	 * 0x0A - this is value 10 (00001010). Bytes use Hex notation
+	 * 0xFF - this is value 255 (11111111).
+	 * if something has two Bytes we 0x01 and 0x0F, we can also write it as 0x01FF
+	 *
+	 * now imagine a color (purple) represented by only a single big number
+	 * 0x00AA00FF (html: #AA00FF)
+	 *
+	 *     Red        Green       Blue      Opacity
+	 * 0x00FF0000, 0x0000FF00, 0x000000FF, 0xFF000000
+	 * this basically says:
+	 * Red value = 0x00AA00FF & 0x00FF0000 = 0x00AA0000
+	 * */
+
+	SDL_Texture *texture;
+	// Creates basic texture for our hole render
+	texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888,
+							   SDL_TEXTUREACCESS_STREAMING,SCREEN_WIDTH, SCREEN_HEIGHT);
+	// Probably does not matter ignore for now
+
+	// Hide mouse cursor when over the game window
+	SDL_ShowCursor(SDL_DISABLE); // personally I would comment this out as it is annoying
+
 	return 0;
 }
 
