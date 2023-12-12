@@ -19,20 +19,20 @@ int main() {
  * TODO [ ]: Moving character (use arrows to move, move vert only on ladders)
  * TODO [ ]: Display the time passed in game
  *
- * TODO [ ]: A. Jumps
+ * TODO [ ]: A. Jumps (1 ptk)
  *    TODO [ ]: After pressing SPACE player moves up, comes back down
  *    TODO [ ]: Player should not jump thought walls / ceilings
  *    TODO [ ]: It should be possible to jump onto next "platform"
  *    TODO [ ]: if(*C) jumping over barrels should be possible
- * TODO [ ]: B. More game Stages
+ * TODO [ ]: B. More game Stages (1 ptk)
  *    TODO [ ]: At least 3 different game "stages"
  *    TODO [ ]: User should be able to switch between them using Number Keys (1, 2, 3...)
  *    TODO [ ]: if(*D) "program" should know we changed stage and ?show it on the screen?
- * TODO [ ]: C. Barrels exists and move
+ * TODO [ ]: C. Barrels exists and move (1 ptk)
  *    TODO [ ]: Barrels appear at a specific location
  *    TODO [ ]: Movement of the barrel should be "parameterized"
  *    TODO [ ]: The "Program" should detect collision and if(*D) do something...
- * TODO [ ]: D. A LOT
+ * TODO [ ]: D. A LOT (1 ptk)
  * 	  TODO [ ]: Starter Screen menu (Exit, Save, Read, Check results, Select a stage)
  * 	  TODO [ ]: Entering player names (vis text, ability to delete)
  * 	  TODO [ ]: Display number of lives
@@ -40,24 +40,24 @@ int main() {
  * 	  TODO [ ]: if(*F) Die show some points
  * 	  TODO [ ]: Out of lives show main menu and if(*H) save score
  * 	  TODO [ ]: Get to top next stage
- * TODO [ ]: E. Animations
+ * TODO [ ]: E. Animations (2 ptk)
  *    TODO [ ]: Animation for climbing
  *    TODO [ ]: Jumping
  *    TODO [ ]: if(*C) Barrels rolling
- * TODO [ ]: F. Counting
+ * TODO [ ]: F. Counting (1 ptk)
  *    TODO [ ]: Keep count of number of "Points"
  *    TODO [ ]: Keep "points" between "stages"
  *    TODO [ ]: if(*C) extra "points" for jumping over barrels
  *    TODO [ ]: Picking up "trophy"
- * TODO [ ]: G. Saving best score
+ * TODO [ ]: G. Saving best score (1 ptk)
  *    TODO [ ]: Game finishes (is won)
  *    TODO [ ]: Save result with Entered Nick to file
  *    TODO [ ]: Display results on the screen (only top 10)
  *    TODO [ ]: "Scrollable" result list
  *    TODO [ ]: *!F show time not score
- * TODO [ ]: H. Advance Looks
+ * TODO [ ]: H. Advance Looks (1 ptk)
  *    TODO [ ]: The Platforms are tilted
- * TODO [ ]: I. Encoding "stage" in a file
+ * TODO [ ]: I. Encoding "stage" in a file (1 ptk)
  *    TODO [ ]: Create a file with your own encoding of a stage (easily editable)
  *    TODO [ ]: Read the "Stage File" upon starting the "stage"
  *    TODO [ ]: Amount of object in the file should not be limited
