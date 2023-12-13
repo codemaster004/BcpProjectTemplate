@@ -257,7 +257,11 @@ void DrawString(SDL_Surface *screen, int x, int y, const char *text,
 				SDL_Surface *charset) {
 	int offX, offY;
 	int character;
+
+	// SDL_Rect - structure keeping information about origin (x, y) (top left corner) and its (w, h) (width and height)
 	SDL_Rect src, dest;
+
+	// basic assignment to a struct
 	src.w = 8;
 	src.h = 8;
 	dest.w = 8;
