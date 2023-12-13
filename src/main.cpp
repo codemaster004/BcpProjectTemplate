@@ -212,45 +212,68 @@ int main() {
 
 		// Remember the functions at the top? Go read what they do, and maybe see the actual code at the bottom
 
+		// draw on screen surface our ETI surface
 		DrawSurface(screen, eti,
-					SCREEN_WIDTH / 2 + sin(distance) * SCREEN_HEIGHT / 3,
-					SCREEN_HEIGHT / 2 + cos(distance) * SCREEN_HEIGHT / 3);
+					SCREEN_WIDTH / 2 + sin(distance) * SCREEN_HEIGHT / 3, // math staff for drawing on an arc of the circle
+					SCREEN_HEIGHT / 2 + cos(distance) * SCREEN_HEIGHT / 3); // same thing here, the other cord
 
-//		DrawRectangle(screen, 4, 4, SCREEN_WIDTH - 8, 36, red, blue);
-//
-//		// "template for the second project, elapsed time = %.1lf s  %.0lf frames / s"
-//		snprintf(text, 128, "Szablon drugiego zadania, czas trwania = %.1lf s  %.0lf klatek / s", worldTime, fps);
-//
-//		DrawString(screen, screen->w / 2 - strlen(text) * 8 / 2, 10, text, charset);
-//
-//		//	      "Esc - exit, \030 - faster, \031 - slower"
-//		snprintf(text, 128, "Esc - wyjscie, \030 - przyspieszenie, \031 - zwolnienie");
-//		DrawString(screen, screen->w / 2 - strlen(text) * 8 / 2, 26, text, charset);
-//
-//		SDL_UpdateTexture(texture, nullptr, screen->pixels, screen->pitch);
-////		SDL_RenderClear(renderer);
-//		SDL_RenderCopy(renderer, texture, nullptr, nullptr);
-//		SDL_RenderPresent(renderer);
+		// This top rectangle with information, at least a background for it
+		DrawRectangle(screen, 4, 4, SCREEN_WIDTH - 8, 36, red, blue);
 
+		// "template for the second project, elapsed time = %.1lf s  %.0lf frames / s"
+		// print for the console and change value of text variable
+		snprintf(text, 128, "Szablon drugiego zadania, czas trwania = %.1lf s  %.0lf klatek / s", worldTime, fps);
+
+		// see that string above? Yes, show this one. Centered on the screen
+		DrawString(screen, screen->w / 2 - strlen(text) * 8 / 2, 10, text, charset);
+
+		//	      "Esc - exit, \030 - faster, \031 - slower"
+		snprintf(text, 128, "Esc - wyjscie, \030 - przyspieszenie, \031 - zwolnienie"); // also changes text value
+		DrawString(screen, screen->w / 2 - strlen(text) * 8 / 2, 26, text, charset); // again show, centered
+
+		// last big complicated thing, I promise
+		/*
+		 * Remember those Surfaces? physically they are just a table of pixels kept in RAM you are replacing
+		 * Now, Texture are the same thing but in vRAM, memory in the graphics card.
+		 * Renderer is interpreting/rendering the Texture table and showing this on actual computer screen
+		 * Wasn't that had eh?
+		 */
+
+		// This part is required for anything to show stuff.
+		// copy screen Surface to screen Texture
+		SDL_UpdateTexture(texture, nullptr, screen->pixels, screen->pitch);
+
+		// clearing the renderer
+		SDL_RenderClear(renderer); // can be commented, maybe should
+
+		// copy entire screen Texture to the screen Renderer
+		SDL_RenderCopy(renderer, texture, nullptr, nullptr);
+
+		// this is the actual part that shows our created everything
+		SDL_RenderPresent(renderer);
+
+		// fake while loop, only here to handle multiple key preses at once
 		while (SDL_PollEvent(&event)) {
 			switch (event.type) {
-//				case SDL_KEYDOWN:
-//					if (event.key.keysym.sym == SDLK_ESCAPE) quit = 1;
-//					else if (event.key.keysym.sym == SDLK_UP) etiSpeed = 2.0;
-//					else if (event.key.keysym.sym == SDLK_DOWN) etiSpeed = 0.3;
-//					break;
-//				case SDL_KEYUP:
-//					etiSpeed = 1.0;
-//					break;
-				case SDL_QUIT:
+				case SDL_KEYDOWN: // event of pressing down a key on keyboard
+					// what should we do?
+					if (event.key.keysym.sym == SDLK_ESCAPE) quit = true; // Esc = Quit
+					else if (event.key.keysym.sym == SDLK_UP) etiSpeed = 2.0; // Arrow Up Fly faster by changing speed
+					else if (event.key.keysym.sym == SDLK_DOWN) etiSpeed = 0.3; // Reduce the speed
+					break;
+				case SDL_KEYUP: // similarly event when you stop pressing
+					etiSpeed = 1.0; // reset the speed of ETI
+					break;
+				case SDL_QUIT: // important duck. This is for closing the window by the regular "X" button. DON'T FORGET
 					quit = true;
 					break;
 			}
 		}
-		frames++;
+
+		frames++; // one more frame was generated
 	}
 
-	return 0;
+	return 0; // READING DONE!!!
 }
 
 void DrawString(SDL_Surface *screen, int x, int y, const char *text,
@@ -295,8 +318,7 @@ void DrawString(SDL_Surface *screen, int x, int y, const char *text,
 	}
 }
 
-void DrawSurface(SDL_Surface *screen, SDL_Surface *sprite, int x,
-				 int y) { // remember (x, y) are considered to be the center point
+void DrawSurface(SDL_Surface *screen, SDL_Surface *sprite, int x, int y) { // remember (x, y) cords of the center
 	// SDL_Rect - structure keeping information about origin (x, y) (top left corner) and its (w, h) (width and height)
 	SDL_Rect dest;
 
@@ -310,12 +332,12 @@ void DrawSurface(SDL_Surface *screen, SDL_Surface *sprite, int x,
 	SDL_BlitSurface(sprite, nullptr, screen, &dest);
 }
 
-void DrawPixel(SDL_Surface *surface, int x, int y, Uint32 color) { // Warning! Wibbly wobbly, timey wimey staff
+void DrawPixel(SDL_Surface *surface, int x, int y, Uint32 color) { // Warning! Wibbly wobbly, timey wimey stuff
 	// how about we move on and just take for granted that this works? Okay? Great!
 
 	int bpp = surface->format->BytesPerPixel; // one pixel consists of N Bytes, wee need to know of how many
 	// surface->pixels is type of `void *` void pointers, whenever we do something directly with it,
-	// we need to reinterpret it to what we are using.
+	// we need to reinterpret it to use operate on Bytes
 	Uint8 *p = (Uint8 *) surface->pixels + y * surface->pitch + x * bpp;
 	/*
 	 * Seriously why you are reading this, go touch some gras.
@@ -342,7 +364,7 @@ void DrawLine(SDL_Surface *screen, int x, int y, int l, int dx, int dy, Uint32 c
 }
 
 void DrawRectangle(SDL_Surface *screen, int x, int y, int l, int k, Uint32 outlineColor, Uint32 fillColor) {
-	// Drawing borderlines separately, just for safety
+	// Drawing borderlines separately, so we can have outlines in a different color
 	DrawLine(screen, x, y, k, 0, 1, outlineColor);             // left
 	DrawLine(screen, x + l - 1, y, k, 0, 1, outlineColor);     // right
 	DrawLine(screen, x, y, l, 1, 0, outlineColor);             // top
