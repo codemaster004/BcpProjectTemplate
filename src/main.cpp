@@ -190,6 +190,18 @@ int main() {
 		// t - time passed since it was last drawn (previous tick)
 		distance += etiSpeed * delta;
 
+		// Add value to the timer counting how much time passed between last fps show
+		fpsTimer += delta;
+		// if fps was last shown more than half a second ago, we can show it one more time
+#define FPS_REFRESH_TIME 0.5 // math talk, we show fps ever half a second, hover fps should show frames in a full second
+#define FPS_ADJUSTED_TIME (1 / FPS_REFRESH_TIME) // to do this we need to reverse this 1/0.5=2, so we will show real count
+		if (fpsTimer > FPS_REFRESH_TIME) {
+			// how many frames were in half a second
+			fps = frames * FPS_ADJUSTED_TIME; // adjusted to show how much would be in a full second
+			frames = 0; // reset fps count
+			fpsTimer -= FPS_REFRESH_TIME; // subtract not 0, to preserver small value changes like 0.5003
+		}
+
 		// fast way to cover the entire surface with one color
 		SDL_FillRect(screen, nullptr, black); // this time we paint entire "screen" black
 		// this is done in order to hide what was drawn in previous tick
@@ -197,13 +209,6 @@ int main() {
 //		DrawSurface(screen, eti,
 //					SCREEN_WIDTH / 2 + sin(distance) * SCREEN_HEIGHT / 3,
 //					SCREEN_HEIGHT / 2 + cos(distance) * SCREEN_HEIGHT / 3);
-
-		fpsTimer += delta;
-		if (fpsTimer > 0.5) {
-			fps = frames * 2;
-			frames = 0;
-			fpsTimer -= 0.5;
-		}
 
 //		DrawRectangle(screen, 4, 4, SCREEN_WIDTH - 8, 36, red, blue);
 //
