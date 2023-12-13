@@ -16,11 +16,13 @@ void DrawString(SDL_Surface *screen, int x, int y, const char *text, SDL_Surface
 
 // draw a surface sprite on a surface screen in point (x, y)
 // (x, y) is the center of sprite on screen
+// "sprite" meaning an asset/image or a part of it
 void DrawSurface(SDL_Surface *screen, SDL_Surface *sprite, int x, int y);
 
 // draw a single pixel
 void DrawPixel(SDL_Surface *surface, int x, int y, Uint32 color);
 
+// draw vertical or horizontal line
 // draw a vertical (when dx = 0, dy = 1) or horizontal (when dx = 1, dy = 0) line
 void DrawLine(SDL_Surface *screen, int x, int y, int l, int dx, int dy, Uint32 color);
 
@@ -30,7 +32,7 @@ void DrawRectangle(SDL_Surface *screen, int x, int y, int l, int k, Uint32 outli
 // END IGNORE TILL PART 3 //
 
 int main() {
-	// PART 1. THIS ONLY INITIALIZES THE LIBRARY
+	// PART 1. THIS ONLY INITIALIZES THE LIBRARY //
 
 	// Check if the library is able to be imported and start
 	if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
@@ -101,9 +103,9 @@ int main() {
 	// Basically does not matter only as a (part in between) "surface" and "renderer"
 
 	// Hide mouse cursor when over the game window
-//	SDL_ShowCursor(SDL_DISABLE); // personally I would comment this out as it is annoying
+	SDL_ShowCursor(SDL_DISABLE); // personally I would comment this out as it is annoying
 
-	// PART 2. LOADING THINGIES AND HOPEFULLY SEE SOMETHING
+	// PART 2. LOADING THINGIES AND HOPEFULLY SEE SOMETHING //
 
 	SDL_Surface *charset; // Remember this? A drawable rectangle, this time will contain some characters
 
@@ -202,13 +204,17 @@ int main() {
 			fpsTimer -= FPS_REFRESH_TIME; // subtract not 0, to preserver small value changes like 0.5003
 		}
 
+		// PART 3. DRAWING SOME STUFF //
+
 		// fast way to cover the entire surface with one color
 		SDL_FillRect(screen, nullptr, black); // this time we paint entire "screen" black
 		// this is done in order to hide what was drawn in previous tick
 
-//		DrawSurface(screen, eti,
-//					SCREEN_WIDTH / 2 + sin(distance) * SCREEN_HEIGHT / 3,
-//					SCREEN_HEIGHT / 2 + cos(distance) * SCREEN_HEIGHT / 3);
+		// Remember the functions at the top? Go read what they do, and maybe see the actual code at the bottom
+
+		DrawSurface(screen, eti,
+					SCREEN_WIDTH / 2 + sin(distance) * SCREEN_HEIGHT / 3,
+					SCREEN_HEIGHT / 2 + cos(distance) * SCREEN_HEIGHT / 3);
 
 //		DrawRectangle(screen, 4, 4, SCREEN_WIDTH - 8, 36, red, blue);
 //
@@ -249,19 +255,21 @@ int main() {
 
 void DrawString(SDL_Surface *screen, int x, int y, const char *text,
 				SDL_Surface *charset) {
-	int offX, offY, c;
+	int offX, offY;
+	int character;
 	SDL_Rect src, dest;
 	src.w = 8;
 	src.h = 8;
 	dest.w = 8;
 	dest.h = 8;
 
+	// while we are not at the end of the string '/0' do this...
 	while (*text) {
-		c = *text & 255; // convert 'char' to number with a "mask"
+		character = *text & 255; // convert 'char' to number with a "mask"
 		// now knowing the characters are position in rows of 16 elements
-		// from numerical value of calculate its offset from top and left
-		offX = (c % 16) * 8;
-		offY = (c / 16) * 8;
+		// from numerical value we calculate its offset from top and left
+		offY = (character / 16) * 8;
+		offX = (character % 16) * 8;
 
 		src.x = offX;
 		src.y = offY;
@@ -270,6 +278,12 @@ void DrawString(SDL_Surface *screen, int x, int y, const char *text,
 
 		// Draw the letter
 		SDL_BlitSurface(charset, &src, screen, &dest);
+		/* This function takes in 4 argument, or more precisely two groups of arguments
+		 * each group consists of 2 args.
+		 *
+		 * group looks like this: (surface with some drawings, information [x, y, w, h] what part interest us)
+		 * now the full function arguments can be read: (copy from, copy to)
+		 */
 
 		// Move x by width of the letter and increase the letter
 		x += 8;
