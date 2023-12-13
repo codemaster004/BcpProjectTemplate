@@ -295,12 +295,17 @@ void DrawString(SDL_Surface *screen, int x, int y, const char *text,
 	}
 }
 
-void DrawSurface(SDL_Surface *screen, SDL_Surface *sprite, int x, int y) {
+void DrawSurface(SDL_Surface *screen, SDL_Surface *sprite, int x, int y) { // remember (x, y) are considered to be the center point
+	// SDL_Rect - structure keeping information about origin (x, y) (top left corner) and its (w, h) (width and height)
 	SDL_Rect dest;
+
+	// Determine the top left corner
 	dest.x = x - sprite->w / 2;
 	dest.y = y - sprite->h / 2;
+	// copy width and height
 	dest.w = sprite->w;
 	dest.h = sprite->h;
+	// draw entire sprite on screen at given position
 	SDL_BlitSurface(sprite, nullptr, screen, &dest);
 }
 
