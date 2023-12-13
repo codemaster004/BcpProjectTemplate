@@ -1,25 +1,48 @@
-
+#include "cmath"
 #include "cstdio"
+#include "cstring"
 
 #include "../sdl/include/SDL.h"
+#include "../sdl/include/SDL_main.h"
 
-#define SCREEN_WIDTH 300
-#define SCREEN_HEIGHT 300
+#define SCREEN_WIDTH 640
+#define SCREEN_HEIGHT 480
+
+// FUNCTION HEADERS IGNORE TILL PART 3 //
+
+// draw a text txt on surface screen, starting from the point (x, y)
+// charset is a 128x128 bitmap containing character images
+void DrawString(SDL_Surface *screen, int x, int y, const char *text, SDL_Surface *charset);
+
+// draw a surface sprite on a surface screen in point (x, y)
+// (x, y) is the center of sprite on screen
+void DrawSurface(SDL_Surface *screen, SDL_Surface *sprite, int x, int y);
+
+// draw a single pixel
+void DrawPixel(SDL_Surface *surface, int x, int y, Uint32 color);
+
+// draw a vertical (when dx = 0, dy = 1) or horizontal (when dx = 1, dy = 0) line
+void DrawLine(SDL_Surface *screen, int x, int y, int l, int dx, int dy, Uint32 color);
+
+// draw a rectangle of size l by k
+void DrawRectangle(SDL_Surface *screen, int x, int y, int l, int k, Uint32 outlineColor, Uint32 fillColor);
+
+// END IGNORE TILL PART 3 //
 
 int main() {
 	// PART 1. THIS ONLY INITIALIZES THE LIBRARY
 
 	// Check if the library is able to be imported and start
 	if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
-		// can return an error if for example a pat is missing
+		// can return an error if for example you have no display in your machine
 		printf("SDL_Init error: %s\n", SDL_GetError()); // show what happened
 		return 1;
 	}
 
 	SDL_Window *window;
 	SDL_Renderer *renderer;
-	// Create a window "application window" with specified size (use (0, 0) for full screen)
-	// Also create render for this window, reader meaning this space under the "window bar"
+	// Create a window "application window" with specified size
+	// Also create renderer for this window, renderer meaning a thing actually showing/drawing/rendering stuff
 	int initError = SDL_CreateWindowAndRenderer(SCREEN_WIDTH, SCREEN_HEIGHT, 0, &window, &renderer);
 
 	// returns a value 0 if was able to create window
@@ -37,14 +60,14 @@ int main() {
 	// Tell the render what is the area he will be drawing/rendering
 	SDL_RenderSetLogicalSize(renderer, SCREEN_WIDTH, SCREEN_HEIGHT); // for safety leave this "here"
 
-	// This sets default drawing color
-	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+	// This sets current color for drawing
+	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255); // you can safely remove for now
 
 	// Setting the title for the provided `window`
 	SDL_SetWindowTitle(window, "Hello there. General Kenobi!");
 
 	// You can think of the Surface as a rectangle you are drawing (changing pixels) on
-	SDL_Surface *screen; // this time we create variable for out "main" drawing rectangle
+	SDL_Surface *screen; // this time we create variable for our "main" drawing rectangle
 
 	// Create the drawing surface the same size as the main window with standard RGBA color schema
 	// "standard RGBA color schema" - red is red and so on,
@@ -52,7 +75,7 @@ int main() {
 	screen = SDL_CreateRGBSurface(
 		0, // This should always be 0, however does nothing
 		SCREEN_WIDTH, SCREEN_HEIGHT, // the size you want the Surface to be
-		32, // Size in bits of the next 4 variables to come
+		32, // Number of bits to use during reading color
 		0x00FF0000, 0x0000FF00, 0x000000FF, 0xFF000000
 	); // magical byte numbers interpreting color
 	/* Magic bytes?
@@ -60,7 +83,7 @@ int main() {
 	 * 0x01 - this is value 1 (00000001).
 	 * 0x0A - this is value 10 (00001010). Bytes use Hex notation
 	 * 0xFF - this is value 255 (11111111).
-	 * if something has two Bytes we 0x01 and 0x0F, we can also write it as 0x01FF
+	 * if something has two Bytes 0x01 and 0xFF, we can also write it as 0x01FF
 	 *
 	 * now imagine a color (purple) represented by only a single big number
 	 * 0x00AA00FF (html: #AA00FF)
@@ -71,17 +94,217 @@ int main() {
 	 * Red value = 0x00AA00FF & 0x00FF0000 = 0x00AA0000
 	 * */
 
-	SDL_Texture *texture;
-	// Creates basic texture for our hole render
+	SDL_Texture *texture; // same as "surface" but on GPU
+	// Creates basic texture for our whole render
 	texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888,
 							   SDL_TEXTUREACCESS_STREAMING,SCREEN_WIDTH, SCREEN_HEIGHT);
-	// Probably does not matter ignore for now
+	// Basically does not matter only as a (part in between) "surface" and "renderer"
 
 	// Hide mouse cursor when over the game window
-	SDL_ShowCursor(SDL_DISABLE); // personally I would comment this out as it is annoying
+//	SDL_ShowCursor(SDL_DISABLE); // personally I would comment this out as it is annoying
+
+	// PART 2. LOADING THINGIES AND HOPEFULLY SEE SOMETHING
+
+	SDL_Surface *charset; // Remember this? A drawable rectangle, this time will contain some characters
+
+	// Load bitmap cs8x8.bmp
+	// Automatically resize the rectangle to the same size as provided bitmap
+	// And draw on it the content of the file
+	// basically to store the image inside our game
+	charset = SDL_LoadBMP("../static/cs8x8.bmp");
+	// Heads up. This will not draw the image on the "window"
+	// The only way to show something on out window is to use the `renderer`
+
+	if (charset == nullptr) { // if for any reason we couldn't load the image, for example wrong path
+		printf("SDL_LoadBMP(cs8x8.bmp) error: %s\n", SDL_GetError()); // show us what the error was
+		// Destroy everything (free up memory #benice)
+		SDL_FreeSurface(screen);
+		SDL_DestroyTexture(texture);
+		SDL_DestroyWindow(window);
+		SDL_DestroyRenderer(renderer);
+		SDL_Quit(); // Quit the library
+		return 1;
+	}
+	// treat every pixel with given color as transparent
+	SDL_SetColorKey(charset, true, 0x000000);
+
+	// Wait a minute! I saw a similar code somewhere...
+	SDL_Surface *eti;
+	eti = SDL_LoadBMP("../static/eti.bmp");
+	if (eti == nullptr) { // repeatable code warning!
+		printf("SDL_LoadBMP(eti.bmp) error: %s\n", SDL_GetError());
+		SDL_FreeSurface(charset);
+		SDL_FreeSurface(screen);
+		SDL_DestroyTexture(texture);
+		SDL_DestroyWindow(window);
+		SDL_DestroyRenderer(renderer);
+		SDL_Quit();
+		return 1;
+	} // probably should be a function. Don't you think?
+
+
+	// this is here to reserve a space for a long text
+	char text[128];
+
+	// conio had pre-defined colors like #define LIGHT_BLUE 9
+	// now we need to create our own colors, with our names to use later
+	// `Uint32` is a custom type from SDL it is the same thing as `unsigned int`
+	Uint32 black = SDL_MapRGB(screen->format, 0x00, 0x00, 0x00);
+	Uint32 green = SDL_MapRGB(screen->format, 0x00, 0xFF, 0x00);
+	Uint32 red = SDL_MapRGB(screen->format, 0xFF, 0x00, 0x00);
+	Uint32 blue = SDL_MapRGB(screen->format, 0x11, 0x11, 0xCC);
+	// Again magic byte numbers for rgb color values
+	// you can simply read this as html/css colors #FF0000 (red)...
+
+	// SDL_GetTicks() - returns the amount of milliseconds since the library initialization
+	Uint32 startTick = SDL_GetTicks(), endTick;
+	double delta;
+
+	Uint32 frames = 0; // count of frames in between each check
+	double fpsTimer = 0; // +- how much time has passed between showing last frame count
+	double fps = 0; // recalculated value of Frames Per Second
+
+	double worldTime = 0; // how much time has passed since the start of the game
+
+	double distance = 0; // reserve a variable for storing the distance that was covered
+	double etiSpeed = 1; // speed multiplier for the future
+
+	SDL_Event event;
+
+	bool quit = false;
+	while (!quit) {
+		// consider a new "game tick" just started and get the time passed
+		endTick = SDL_GetTicks();
+
+		// here endTick-startTick is the time in milliseconds since
+		// the last screen was drawn
+		// delta is the same time in seconds
+		delta = (endTick - startTick) * 0.001;
+		startTick = endTick;
+
+		// Add the time change to the overall time passed
+		worldTime += delta;
+
+		// calculate the distance covered. (s = v * t)
+		// v - speed of the object, declared above
+		// t - time passed since it was last drawn (previous tick)
+		distance += etiSpeed * delta;
+
+		// fast way to cover the entire surface with one color
+		SDL_FillRect(screen, nullptr, black); // this time we paint entire "screen" black
+		// this is done in order to hide what was drawn in previous tick
+
+//		DrawSurface(screen, eti,
+//					SCREEN_WIDTH / 2 + sin(distance) * SCREEN_HEIGHT / 3,
+//					SCREEN_HEIGHT / 2 + cos(distance) * SCREEN_HEIGHT / 3);
+
+		fpsTimer += delta;
+		if (fpsTimer > 0.5) {
+			fps = frames * 2;
+			frames = 0;
+			fpsTimer -= 0.5;
+		}
+
+//		DrawRectangle(screen, 4, 4, SCREEN_WIDTH - 8, 36, red, blue);
+//
+//		// "template for the second project, elapsed time = %.1lf s  %.0lf frames / s"
+//		snprintf(text, 128, "Szablon drugiego zadania, czas trwania = %.1lf s  %.0lf klatek / s", worldTime, fps);
+//
+//		DrawString(screen, screen->w / 2 - strlen(text) * 8 / 2, 10, text, charset);
+//
+//		//	      "Esc - exit, \030 - faster, \031 - slower"
+//		snprintf(text, 128, "Esc - wyjscie, \030 - przyspieszenie, \031 - zwolnienie");
+//		DrawString(screen, screen->w / 2 - strlen(text) * 8 / 2, 26, text, charset);
+//
+//		SDL_UpdateTexture(texture, nullptr, screen->pixels, screen->pitch);
+////		SDL_RenderClear(renderer);
+//		SDL_RenderCopy(renderer, texture, nullptr, nullptr);
+//		SDL_RenderPresent(renderer);
+
+		while (SDL_PollEvent(&event)) {
+			switch (event.type) {
+//				case SDL_KEYDOWN:
+//					if (event.key.keysym.sym == SDLK_ESCAPE) quit = 1;
+//					else if (event.key.keysym.sym == SDLK_UP) etiSpeed = 2.0;
+//					else if (event.key.keysym.sym == SDLK_DOWN) etiSpeed = 0.3;
+//					break;
+//				case SDL_KEYUP:
+//					etiSpeed = 1.0;
+//					break;
+				case SDL_QUIT:
+					quit = true;
+					break;
+			}
+		}
+		frames++;
+	}
 
 	return 0;
 }
+
+void DrawString(SDL_Surface *screen, int x, int y, const char *text,
+				SDL_Surface *charset) {
+	int offX, offY, c;
+	SDL_Rect src, dest;
+	src.w = 8;
+	src.h = 8;
+	dest.w = 8;
+	dest.h = 8;
+
+	while (*text) {
+		c = *text & 255; // convert 'char' to number with a "mask"
+		// now knowing the characters are position in rows of 16 elements
+		// from numerical value of calculate its offset from top and left
+		offX = (c % 16) * 8;
+		offY = (c / 16) * 8;
+
+		src.x = offX;
+		src.y = offY;
+		dest.x = x;
+		dest.y = y;
+
+		// Draw the letter
+		SDL_BlitSurface(charset, &src, screen, &dest);
+
+		// Move x by width of the letter and increase the letter
+		x += 8;
+		text++;
+	}
+}
+
+void DrawSurface(SDL_Surface *screen, SDL_Surface *sprite, int x, int y) {
+	SDL_Rect dest;
+	dest.x = x - sprite->w / 2;
+	dest.y = y - sprite->h / 2;
+	dest.w = sprite->w;
+	dest.h = sprite->h;
+	SDL_BlitSurface(sprite, nullptr, screen, &dest);
+}
+
+void DrawPixel(SDL_Surface *surface, int x, int y, Uint32 color) {
+	int bpp = surface->format->BytesPerPixel;
+	Uint8 *p = (Uint8 *) surface->pixels + y * surface->pitch + x * bpp;
+	*(Uint32 *) p = color;
+}
+
+void DrawLine(SDL_Surface *screen, int x, int y, int l, int dx, int dy, Uint32 color) {
+	for (int i = 0; i < l; i++) {
+		DrawPixel(screen, x, y, color);
+		x += dx;
+		y += dy;
+	}
+}
+
+void DrawRectangle(SDL_Surface *screen, int x, int y, int l, int k, Uint32 outlineColor, Uint32 fillColor) {
+	int i;
+	DrawLine(screen, x, y, k, 0, 1, outlineColor);
+	DrawLine(screen, x + l - 1, y, k, 0, 1, outlineColor);
+	DrawLine(screen, x, y, l, 1, 0, outlineColor);
+	DrawLine(screen, x, y + k - 1, l, 1, 0, outlineColor);
+	for (i = y + 1; i < y + k - 1; i++)
+		DrawLine(screen, x + 1, i, l - 2, 1, 0, fillColor);
+}
+
 
 /**
  * TODO [x]: Write a TODO list
