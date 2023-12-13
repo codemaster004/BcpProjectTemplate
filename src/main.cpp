@@ -99,7 +99,7 @@ int main() {
 	SDL_Texture *texture; // same as "surface" but on GPU
 	// Creates basic texture for our whole render
 	texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888,
-							   SDL_TEXTUREACCESS_STREAMING,SCREEN_WIDTH, SCREEN_HEIGHT);
+								SDL_TEXTUREACCESS_STREAMING, SCREEN_WIDTH, SCREEN_HEIGHT);
 	// Basically does not matter only as a (part in between) "surface" and "renderer"
 
 	// Hide mouse cursor when over the game window
@@ -295,7 +295,8 @@ void DrawString(SDL_Surface *screen, int x, int y, const char *text,
 	}
 }
 
-void DrawSurface(SDL_Surface *screen, SDL_Surface *sprite, int x, int y) { // remember (x, y) are considered to be the center point
+void DrawSurface(SDL_Surface *screen, SDL_Surface *sprite, int x,
+				 int y) { // remember (x, y) are considered to be the center point
 	// SDL_Rect - structure keeping information about origin (x, y) (top left corner) and its (w, h) (width and height)
 	SDL_Rect dest;
 
@@ -309,14 +310,31 @@ void DrawSurface(SDL_Surface *screen, SDL_Surface *sprite, int x, int y) { // re
 	SDL_BlitSurface(sprite, nullptr, screen, &dest);
 }
 
-void DrawPixel(SDL_Surface *surface, int x, int y, Uint32 color) {
-	int bpp = surface->format->BytesPerPixel;
+void DrawPixel(SDL_Surface *surface, int x, int y, Uint32 color) { // Warning! Wibbly wobbly, timey wimey staff
+	// how about we move on and just take for granted that this works? Okay? Great!
+
+	int bpp = surface->format->BytesPerPixel; // one pixel consists of N Bytes, wee need to know of how many
+	// surface->pixels is type of `void *` void pointers, whenever we do something directly with it,
+	// we need to reinterpret it to what we are using.
 	Uint8 *p = (Uint8 *) surface->pixels + y * surface->pitch + x * bpp;
-	*(Uint32 *) p = color;
+	/*
+	 * Seriously why you are reading this, go touch some gras.
+	 * Uint8 *p = (Uint8 *) - this is the type we are operating on, a "SiMpLiFiCaTiOn" for pointer arithmetics
+	 * surface->pixels - pointer to array of pixels, yes 1D array #libraryOptimization
+	 * ... now will come pointer arithmetics for determining the correct spot to alter values to change the color of pixel
+	 * + y * surface->pitch - `pitch` holds info about how long in Bytes one row is, that is how we get correct row
+	 * + x * bpp - Byte size of one Pixel times which pixel from left it is
+	 * now we should have a pointer to the beginning of a pixel value.
+	 */
+	// first reinterpret the pointer to be the size of out format
+	*(Uint32 *) p = color; // alter the value
+	// congrats, you changed one pixel
+	// almost no students were harmed in writing this explanation
 }
 
 void DrawLine(SDL_Surface *screen, int x, int y, int l, int dx, int dy, Uint32 color) {
-	for (int i = 0; i < l; i++) {
+	// yes! you guessed correctly.
+	for (int i = 0; i < l; i++) { // this iterates over the line and draws every pixel, separately
 		DrawPixel(screen, x, y, color);
 		x += dx;
 		y += dy;
@@ -324,12 +342,13 @@ void DrawLine(SDL_Surface *screen, int x, int y, int l, int dx, int dy, Uint32 c
 }
 
 void DrawRectangle(SDL_Surface *screen, int x, int y, int l, int k, Uint32 outlineColor, Uint32 fillColor) {
-	int i;
-	DrawLine(screen, x, y, k, 0, 1, outlineColor);
-	DrawLine(screen, x + l - 1, y, k, 0, 1, outlineColor);
-	DrawLine(screen, x, y, l, 1, 0, outlineColor);
-	DrawLine(screen, x, y + k - 1, l, 1, 0, outlineColor);
-	for (i = y + 1; i < y + k - 1; i++)
+	// Drawing borderlines separately, just for safety
+	DrawLine(screen, x, y, k, 0, 1, outlineColor);             // left
+	DrawLine(screen, x + l - 1, y, k, 0, 1, outlineColor);     // right
+	DrawLine(screen, x, y, l, 1, 0, outlineColor);             // top
+	DrawLine(screen, x, y + k - 1, l, 1, 0, outlineColor);     // bottom
+
+	for (int i = y + 1; i < y + k - 1; i++) // iterate over y value and fill the remaining space
 		DrawLine(screen, x + 1, i, l - 2, 1, 0, fillColor);
 }
 
