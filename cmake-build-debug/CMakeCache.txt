@@ -234,6 +234,12 @@ KingDonkey_SOURCE_DIR:STATIC=/Users/filip/Developer/Cpp/BcpProjectTemplate
 //The directory containing a CMake configuration file for SDL2.
 SDL2_DIR:PATH=/opt/homebrew/lib/cmake/SDL2
 
+//Path to a library.
+SDLMAIN_LIBRARY:FILEPATH=SDLMAIN_LIBRARY-NOTFOUND
+
+//Path to a file.
+SDL_INCLUDE_DIR:PATH=SDL_INCLUDE_DIR-NOTFOUND
+
 
 ########################
 # INTERNAL cache entries
@@ -372,4 +378,6 @@ CMAKE_TAPI-ADVANCED:INTERNAL=1
 CMAKE_UNAME:INTERNAL=/usr/bin/uname
 //ADVANCED property for variable: CMAKE_VERBOSE_MAKEFILE
 CMAKE_VERBOSE_MAKEFILE-ADVANCED:INTERNAL=1
+//Path to a library.
+SDL_LIBRARY_TEMP:INTERNAL=SDL_LIBRARY_TEMP-NOTFOUND
 

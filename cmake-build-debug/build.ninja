@@ -52,7 +52,7 @@ build cmake_object_order_depends_target_BcpProjectTemplate: phony || CMakeFiles/
 build CMakeFiles/BcpProjectTemplate.dir/src/main.cpp.o: CXX_COMPILER__BcpProjectTemplate_unscanned_Debug /Users/filip/Developer/Cpp/BcpProjectTemplate/src/main.cpp || cmake_object_order_depends_target_BcpProjectTemplate
   DEP_FILE = CMakeFiles/BcpProjectTemplate.dir/src/main.cpp.o.d
   FLAGS = -g -std=gnu++17 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.2.sdk -mmacosx-version-min=14.1 -fcolor-diagnostics
-  INCLUDES = -I/Users/filip/Developer/Cpp/BcpProjectTemplate/./sdl/include -isystem /opt/homebrew/Cellar/sdl2/2.28.5/include/SDL2
+  INCLUDES = -I/Users/filip/Developer/Cpp/BcpProjectTemplate/sdl/include -isystem /opt/homebrew/Cellar/sdl2/2.28.5/include/SDL2
   OBJECT_DIR = CMakeFiles/BcpProjectTemplate.dir
   OBJECT_FILE_DIR = CMakeFiles/BcpProjectTemplate.dir/src
 
@@ -66,8 +66,8 @@ build CMakeFiles/BcpProjectTemplate.dir/src/main.cpp.o: CXX_COMPILER__BcpProject
 
 build BcpProjectTemplate: CXX_EXECUTABLE_LINKER__BcpProjectTemplate_Debug CMakeFiles/BcpProjectTemplate.dir/src/main.cpp.o | /opt/homebrew/Cellar/sdl2/2.28.5/lib/libSDL2.dylib
   FLAGS = -g -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.2.sdk -mmacosx-version-min=14.1
-  LINK_LIBRARIES = -Wl,-rpath,/Users/filip/Developer/Cpp/BcpProjectTemplate/./sdl/lib -Wl,-rpath,/opt/homebrew/Cellar/sdl2/2.28.5/lib  /opt/homebrew/Cellar/sdl2/2.28.5/lib/libSDL2.dylib
-  LINK_PATH = -L/Users/filip/Developer/Cpp/BcpProjectTemplate/./sdl/lib   -L/opt/homebrew/Cellar/sdl2/2.28.5/lib
+  LINK_LIBRARIES = -Wl,-rpath,/Users/filip/Developer/Cpp/BcpProjectTemplate/sdl/lib -Wl,-rpath,/opt/homebrew/Cellar/sdl2/2.28.5/lib  /opt/homebrew/Cellar/sdl2/2.28.5/lib/libSDL2.dylib
+  LINK_PATH = -L/Users/filip/Developer/Cpp/BcpProjectTemplate/sdl/lib   -L/opt/homebrew/Cellar/sdl2/2.28.5/lib
   OBJECT_DIR = CMakeFiles/BcpProjectTemplate.dir
   POST_BUILD = :
   PRE_LINK = :

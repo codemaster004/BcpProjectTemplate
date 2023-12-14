@@ -1,12 +1,7 @@
 # ninja log v5
 268	317	1702415007477845270	KingDonkey	72ea9e3c1903a6e9
-0	109	1702503743797329519	build.ninja	d29d2d86bc56833c
-1	150	1702503743797329519	build.ninja	976ebe4dceb8140f
-0	661	1702503744495699351	CMakeFiles/BcpProjectTemplate.dir/src/main.cpp.o	a4259398c57564be
-663	2195	1702503746031693324	BcpProjectTemplate	bb057fdf25fb9600
-2	255	1702503802076069812	CMakeFiles/BcpProjectTemplate.dir/src/main.cpp.o	a4259398c57564be
-255	309	1702503802130286169	BcpProjectTemplate	bb057fdf25fb9600
-2	654	1702504616548352466	CMakeFiles/BcpProjectTemplate.dir/src/main.cpp.o	a4259398c57564be
-655	722	1702504616617901998	BcpProjectTemplate	bb057fdf25fb9600
-2	641	1702548329976944348	CMakeFiles/BcpProjectTemplate.dir/src/main.cpp.o	a4259398c57564be
+1	150	1702590952479653499	build.ninja	976ebe4dceb8140f
 641	859	1702548330195523665	BcpProjectTemplate	bb057fdf25fb9600
+4	476	1702590826729449344	CMakeFiles/BcpProjectTemplate.dir/src/main.cpp.o	80bf5b1d73fd3a48
+8	743	1702590956400364272	CMakeFiles/BcpProjectTemplate.dir/src/main.cpp.o	faeaae0cfe3c7a
+743	947	1702590956601728343	BcpProjectTemplate	8f9868ed07d5657c
