@@ -120,7 +120,7 @@ int main() {
 	// Automatically resize the rectangle to the same size as provided bitmap
 	// And draw on it the content of the file
 	// basically to store the image inside our game
-	charset = SDL_LoadBMP("../static/cs8x8.bmp");
+	charset = SDL_LoadBMP("../static/cs8x8.bmp"); // Warning: CHANGE FOR YOUR PATH.
 	// Heads up. This will not draw the image on the "window"
 	// The only way to show something on out window is to use the `renderer`
 
@@ -139,7 +139,7 @@ int main() {
 
 	// Wait a minute! I saw a similar code somewhere...
 	SDL_Surface *eti;
-	eti = SDL_LoadBMP("../static/eti.bmp");
+	eti = SDL_LoadBMP("../static/eti.bmp"); // Warning: CHANGE FOR YOUR PATH.
 	if (eti == nullptr) { // repeatable code warning!
 		printf("SDL_LoadBMP(eti.bmp) error: %s\n", SDL_GetError());
 		SDL_FreeSurface(charset);
